@@ -1,19 +1,23 @@
-import React from 'react'
+import {React,useState} from 'react'
+import {Button} from 'react-bootstrap'
+import Alerta from './Alerta'
 
 export default function ActionMenu() {
+
+const [Alarma, setAlarma] = useState(false)
+const cambio = () =>{
+    setAlarma(!Alarma)
+}
     return (
         <div className="actions-menu">
             <h1>Mascotas</h1>
-            <div className="actions-menu-content">
-                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                    Nueva
-                </button>
-                <div className="alert alert-danger alert-dismissible" role="alert">
-                    <strong>Oops!</strong> Algo hicimos mal, por favor vuelve a intentarlo!.
-                    <button type="button" className="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+            <div className="actions-menu-content ">
+                <Button variant="primary"  
+                onClick={cambio}>Nueva</Button>
+                {Alarma && <Alerta 
+                    parrafo={"Error 404"}
+                    tipo={'danger'}
+                    inicio={true}/>}
             </div>
         </div>
     )

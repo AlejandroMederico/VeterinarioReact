@@ -1,10 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
 import Pagina from './Pagina';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <div className="App">
+    <div >
       <Pagina/>
     </div>
   );
