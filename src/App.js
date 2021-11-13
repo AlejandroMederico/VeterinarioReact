@@ -1,4 +1,3 @@
-import './App.css';
 import Pagina from './Pagina';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
