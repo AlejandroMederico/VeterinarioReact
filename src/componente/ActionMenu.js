@@ -11,11 +11,13 @@ const cambio = () =>{
     return (
         <div className="actions-menu">
             <h1>Mascotas</h1>
-            <div className="actions-menu-content ">
-                <Button variant="primary"  
+            <div className="d-flex justify-content-between">
+                <Button variant="primary" 
+                style={{maxHeight:"45px"}} 
                 onClick={cambio}>Nueva</Button>
                 {Alarma && <Alerta 
-                    parrafo={"Error 404"}
+                    titulo={"Error 404"}
+                    parrafo={"El servidor web responsable no está en funcionamiento o hay problemas de conexión."}
                     tipo={'danger'}
                     inicio={true}/>}
             </div>
