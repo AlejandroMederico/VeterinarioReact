@@ -2,14 +2,14 @@ import {React,useState} from 'react'
 import {Button} from 'react-bootstrap'
 import Alerta from './Alerta'
 
-export default function ActionMenu({ActivarModal}) {
+export default function ActionMenu({ActivarModal,titulo='Sin titulo'}) {
 const Alarma = false;
 const preciono = () =>{
     ActivarModal();
 }
     return (
         <div className="actions-menu">
-            <h1>Mascotas</h1>
+            <h1 className="ms-2">{titulo}</h1>
             <div className="d-flex justify-content-between">
                 <Button variant="primary" 
                 style={{maxHeight:"45px"}} 
