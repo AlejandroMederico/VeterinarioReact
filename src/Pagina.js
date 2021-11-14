@@ -27,7 +27,7 @@ export default function Pagina({titulo,url}) {
                     <NavbarPagina/>
                     <ActionMenu ActivarModal={ActivarModal} titulo={titulo}/>
                     {Entidad.length > 0 ? <Tabla Entidad={Entidad}/> : <h1>Esperando datos </h1> }
-                    {modal && <ModalGenerico handleClose={handleClose}/>}
+                    {modal && <ModalGenerico handleClose={handleClose} url={url}/>}
             </div>
     )
 }

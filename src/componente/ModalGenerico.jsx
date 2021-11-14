@@ -1,9 +1,13 @@
-import {React, useState} from 'react'
+import {React, useState,useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
-import SelectForm from './SelectForm'
+import { ListasEntidas } from './servicio/Servicio'
 
-export default function ModalGenerico({handleClose}) {
-
+export default function ModalGenerico({handleClose,url}) {
+    const [newMascota, setnewMascota] = useState({
+        tipo: "",
+        nombre: "",
+        dueno: ""
+    })
     const duenos =[
         {valor: "jose", etiqueta: "jose"},
         {valor: "camilo", etiqueta: "camilo"},
@@ -16,6 +20,11 @@ export default function ModalGenerico({handleClose}) {
         {valor: "Pajaro", etiqueta: "Pajaro"},
         {valor: "Otro", etiqueta: "Otro"},
     ]
+    const handleChange = (e) =>{
+        const {value, name}= e.target
+        setnewMascota({...newMascota,[name]:value})
+    }
+    console.log(newMascota);
     return (
         <>
         <Modal show={true} onHide={handleClose} animation={false}>
@@ -25,21 +34,45 @@ export default function ModalGenerico({handleClose}) {
             <Modal.Body>
                 <Form.Group className="mb-3">
                     <Form.Label>Tipo de mascota</Form.Label>
-                    <SelectForm 
-                    opciones={tipoMascota}
-                    titulo={`Eliga tipo de mascota`}/>
+                    <Form.Select 
+                    name="tipo"
+                    value={newMascota.tipo}
+                    onChange={handleChange}
+                    aria-label="Eliga tipo de mascota">
+                            <option>Eliga tipo de mascota</option>
+                            {tipoMascota.length >0
+                            ? tipoMascota.map((opcion,index) =><option value={opcion.valor} key={index}>{opcion.etiqueta}</option> )
+                            : <option value="">No hay datos Cargados</option>
+                            }
+                    </Form.Select>
                 </Form.Group>
 
                 <Form.Group className="mb-3">
                     <Form.Label>Nombre de mascota</Form.Label>
-                    <Form.Control type="text" placeholder="Nombre de las mascota" />
+                    <Form.Control 
+                        name="nombre"
+                        type="text" 
+                        value={newMascota.nombre}
+                        onChange={handleChange}
+                        placeholder="Nombre de las mascota" />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
                     <Form.Label>Duenos</Form.Label>
-                    <SelectForm 
-                    opciones={duenos}
-                    titulo={`Eliga el Dueno`}/>
+                    <Form.Select 
+                    name="dueno"
+                    value={newMascota.dueno}
+                    onChange={handleChange}
+                    aria-label="Eliga el Dueno">
+                            <option>Eliga el Dueno</option>
+                            {duenos.length >0
+                            ? duenos.map((opcion,index) =>
+                            <option 
+                                value={opcion.valor} 
+                                key={index}>{opcion.etiqueta}</option> )
+                            : <option value="">No hay datos Cargados</option>
+                            }
+                    </Form.Select>
                 </Form.Group>
             </Modal.Body>
             <Modal.Footer>
