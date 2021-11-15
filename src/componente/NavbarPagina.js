@@ -6,17 +6,17 @@ export default function NavbarPagina() {
         <div>
             <Navbar bg="dark" variant="dark" expand="lg">
                     <Container fluid>
-                    <Navbar.Brand href="#">Veterinaria</Navbar.Brand>
+                    <Navbar.Brand href="/">Veterinaria</Navbar.Brand>
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse id="navbarScroll">
                         <Nav
                         className="me-auto my-2 my-lg-0"
                         style={{ maxHeight: '100px' }}
                         navbarScroll>
-                        <Nav.Link href="#action1">Mascotas</Nav.Link>
-                        <Nav.Link href="#action2">Veterinari@s</Nav.Link>
-                        <Nav.Link href="#action1">Consultas</Nav.Link>
-                        <Nav.Link href="#action2">Duen@s</Nav.Link>
+                        <Nav.Link href="/">Mascotas</Nav.Link>
+                        <Nav.Link href="/veterinarias">Veterinari@s</Nav.Link>
+                        <Nav.Link href="/consultas">Consultas</Nav.Link>
+                        <Nav.Link href="/duenos">Duen@s</Nav.Link>
                         </Nav>
                         <Form className="d-flex">
                         <FormControl

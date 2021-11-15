@@ -3,19 +3,28 @@ import React, { Fragment } from 'react'
 import { fas,faEdit,faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-export default function FilaTabla({Entidad,editarEntidad,eliminarEntidad}) {
-
+export default function FilaTabla({Entidad,editarEntidad,eliminarEntidad,columna}) {
+    console.log(columna);
+    const evaluarCampo = ({_Entidad,col}) =>{
+        if(typeof _Entidad[col] === 'object'){
+            return _Entidad[col].nombre
+        }
+        return _Entidad[col]
+    }
     return (
         <Fragment>
             {Entidad.length === 0 
                 ?<h5>Ingrese dato para la tabla</h5>
                 :<Fragment>
-                            { Entidad.map((Entidad, index)=>
-                                <tr key={index}>
+                            { Entidad.map((_Entidad, index)=>
+                                <tr key={`${index}-${_Entidad}`}>
                                     <th scope="row">{index}</th>
-                                    <td>{Entidad.tipo}</td>
-                                    <td>{Entidad.nombre}</td>
-                                    <td>{Entidad.dueno}</td>
+                                    {columna.map((col,_index) => 
+                                    <td key={`${_index}-${col}`}>
+                                        {evaluarCampo({_Entidad,col})
+                                        /* {_Entidad[col]} */}
+                                        </td>
+                                    )}
                                     <td>
                                         <div className="btn-group" role="group" aria-label="Basic example">
                                         <Button variant="primary" onClick={() => editarEntidad(index) }>

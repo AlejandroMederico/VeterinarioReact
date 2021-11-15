@@ -8,7 +8,10 @@ export default function Tabla({Entidad,editarEntidad,eliminarEntidad}) {
         <table className="table table-stripped table-hover">
            <EncabezadoTabla columna={columna}/>
            <tbody id="lista-Entidads">
-                <FilaTabla Entidad={Entidad} editarEntidad={editarEntidad} eliminarEntidad={eliminarEntidad}/>
+                <FilaTabla Entidad={Entidad} 
+                    editarEntidad={editarEntidad} 
+                    eliminarEntidad={eliminarEntidad}
+                    columna={columna}/>
             </tbody>
         </table>
     )

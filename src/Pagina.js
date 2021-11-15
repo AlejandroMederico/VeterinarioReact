@@ -1,4 +1,4 @@
-import {React, useState,useEffect} from 'react'
+import {React, useState,useEffect, Fragment} from 'react'
 import ActionMenu from './componente/ActionMenu'
 import NavbarPagina from './componente/NavbarPagina'
 import Tabla from './componente/tabla/Tabla'
@@ -36,21 +36,21 @@ export default function Pagina({titulo,url}) {
     const eliminarEntidad = (elim) => { 
         EliminarEntidas(url,elim).then(()=>BuscarDato(url))
     };
-
+    console.log(Entidad);
     return (
-            <div className="container">
-                    <NavbarPagina/>
-                    <ActionMenu ActivarModal={ActivarModal} titulo={titulo}/>
-                    {Entidad.length > 0 ? <Tabla Entidad={Entidad}
-                                            eliminarEntidad={eliminarEntidad} 
-                                            editarEntidad={editarEntidad}/> 
-                                            : <h1>Esperando datos </h1> }
-                    {modal && <ModalGenerico 
-                    handleClose={handleClose} 
-                    url={url} 
-                    editarEntindad ={Entidad[editar]}
-                    numero={editar}/>}
-            </div>
+            <Fragment>
+                <ActionMenu ActivarModal={ActivarModal} titulo={titulo}/>
+                {Entidad.length > 0 ? <Tabla Entidad={Entidad}
+                                        eliminarEntidad={eliminarEntidad} 
+                                        editarEntidad={editarEntidad}/> 
+                                        : <h1>Esperando datos </h1> }
+                {modal && <ModalGenerico 
+                handleClose={handleClose} 
+                url={url} 
+                editarEntindad ={Entidad[editar]}
+                numero={editar}/>}
+            </Fragment>
+           
     )
 }
 
