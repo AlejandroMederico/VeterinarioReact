@@ -1,33 +1,67 @@
 import {React, useState,useEffect} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
-import { ListasEntidas } from './servicio/Servicio'
+import { ListasEntidas,CrearEditarEntidas } from './servicio/Servicio'
 
-export default function ModalGenerico({handleClose,url}) {
+
+export default function ModalGenerico({handleClose,url,editarEntindad,numero}) {
+    const [BtnEditar, setBtnEditar] = useState(false)
+    const [ApiMascota, setApiMascota] = useState([])
+    const [ApiDueno, setApiDueno] = useState([])
+    const [ApiVeterinario, setApiVeterinario] = useState([])
+    const [ApiConsultas, setApiConsultas] = useState([])
     const [newMascota, setnewMascota] = useState({
         tipo: "",
         nombre: "",
         dueno: ""
     })
-    const duenos =[
-        {valor: "jose", etiqueta: "jose"},
-        {valor: "camilo", etiqueta: "camilo"},
-        {valor: "alejo", etiqueta: "alejo"},
-        {valor: "Felix", etiqueta: "Felix"},
-    ]
+
+    const Guardar= "Guardar"
+    const Editar ="Editar"
+
+    useEffect(() => {
+        ListasEntidas('mascota').then((e)=>setApiMascota(e))
+        ListasEntidas('veterinarias').then((e)=>setApiVeterinario(e))
+        ListasEntidas('duenos').then((e)=>setApiDueno(e))
+        ListasEntidas('consultas').then((e)=>setApiConsultas(e))
+    }, [url])
+
     const tipoMascota =[
         {valor: "Perro", etiqueta: "Perro"},
         {valor: "Gato", etiqueta: "Gato"},
         {valor: "Pajaro", etiqueta: "Pajaro"},
         {valor: "Otro", etiqueta: "Otro"},
     ]
+
+    const botonEditar = () =>{
+        setBtnEditar(false)
+        handleClose()
+    }
+
     const handleChange = (e) =>{
         const {value, name}= e.target
         setnewMascota({...newMascota,[name]:value})
     }
-    console.log(newMascota);
+
+    const handleSumit = () =>{
+        if (BtnEditar === false) {
+            console.log(newMascota);
+            CrearEditarEntidas(url,"POST",newMascota).then(() =>botonEditar() ) 
+        } else {
+            console.log(numero);
+            CrearEditarEntidas(url,"PUT",newMascota,numero).then(() =>botonEditar() ) 
+        }  
+    }
+
+    useEffect(() => {
+        if(editarEntindad != null){
+        setBtnEditar(true)
+        setnewMascota(editarEntindad) 
+        }
+    }, [editarEntindad])
+
     return (
         <>
-        <Modal show={true} onHide={handleClose} animation={false}>
+        <Modal show={true} onHide={botonEditar} animation={false}>
             <Modal.Header closeButton>
                  <Modal.Title>Nueva Mascota</Modal.Title>
             </Modal.Header>
@@ -65,22 +99,22 @@ export default function ModalGenerico({handleClose,url}) {
                     onChange={handleChange}
                     aria-label="Eliga el Dueno">
                             <option>Eliga el Dueno</option>
-                            {duenos.length >0
-                            ? duenos.map((opcion,index) =>
+                            {ApiDueno.length >0
+                            ? ApiDueno.map((opcion,index) =>
                             <option 
-                                value={opcion.valor} 
-                                key={index}>{opcion.etiqueta}</option> )
+                                value={opcion.nombre} 
+                                key={index}>{opcion.nombre}</option> )
                             : <option value="">No hay datos Cargados</option>
                             }
                     </Form.Select>
                 </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
+                <Button variant="secondary" onClick={botonEditar}>
+                    Cerrar
                 </Button>
-                <Button variant="primary" onClick={handleClose}>
-                    Save Changes
+                <Button variant="primary" onClick={handleSumit}>
+                    {BtnEditar === true ? Editar : Guardar}
                 </Button>
             </Modal.Footer>
         </Modal>

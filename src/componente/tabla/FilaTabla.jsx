@@ -1,7 +1,10 @@
+import {Button} from 'react-bootstrap'
 import React, { Fragment } from 'react'
-import Boton from './Boton'
+import { fas,faEdit,faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-export default function FilaTabla({Entidad}) {
+export default function FilaTabla({Entidad,editarEntidad,eliminarEntidad}) {
+
     return (
         <Fragment>
             {Entidad.length === 0 
@@ -15,8 +18,13 @@ export default function FilaTabla({Entidad}) {
                                     <td>{Entidad.dueno}</td>
                                     <td>
                                         <div className="btn-group" role="group" aria-label="Basic example">
-                                            <Boton color={'btn-info'} tipo={"editar"}/>
-                                            <Boton color={'btn-danger'} tipo={"eliminar"}/>
+                                        <Button variant="primary" onClick={() => editarEntidad(index) }>
+                                             <FontAwesomeIcon icon={faEdit}/>
+                                        </Button>
+                                        <Button variant="danger" onClick={() => eliminarEntidad(index) }>
+                                             <FontAwesomeIcon icon={faTrashAlt}/>
+                                        </Button>
+                                        
                                         </div>
                                     </td>
                                 </tr>)
