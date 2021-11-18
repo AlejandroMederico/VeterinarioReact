@@ -4,17 +4,21 @@ import { fas,faEdit,faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default function FilaTabla({Entidad,editarEntidad,eliminarEntidad,columna}) {
-    console.log(columna);
     const evaluarCampo = ({_Entidad,col}) =>{
         if(typeof _Entidad[col] === 'object'){
-            return _Entidad[col].nombre
+            if(col === "veterinarias"){
+                return `${_Entidad[col].nombre}  ${_Entidad[col].apellido}`
+            }
+            if(col === "mascota"){
+                return `${_Entidad[col].nombre}  (${_Entidad[col].tipo})`
+            }
         }
         return _Entidad[col]
     }
     return (
         <Fragment>
             {Entidad.length === 0 
-                ?<h5>Ingrese dato para la tabla</h5>
+                ?<p>Ingrese dato para la tabla</p>
                 :<Fragment>
                             { Entidad.map((_Entidad, index)=>
                                 <tr key={`${index}-${_Entidad}`}>

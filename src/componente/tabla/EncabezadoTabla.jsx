@@ -6,7 +6,7 @@ export default function EncabezadoTabla({columna}) {
              <thead className="thead-dark">
                 <tr>
                     {columna.length === 0 
-                    ?<h5>Ingrese dato para la tabla</h5>
+                    ?<p>Ingrese dato para la tabla</p>
                     :<Fragment>
                         <th scope="col">#</th>
                         {columna.map( (columna, index) => <th key={index} scope="col"> {columna}</th>)}

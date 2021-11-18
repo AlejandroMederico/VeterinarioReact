@@ -1,4 +1,4 @@
-const urlBasica ="https://veterinaria-vanilla-backend.vercel.app";
+const urlBasica ="http://localhost:5000";
 
 
 export  async function ListasEntidas(url) {

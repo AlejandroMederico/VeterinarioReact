@@ -1,9 +1,8 @@
-import {React, useState,useEffect} from 'react'
+import {React, useState,useEffect, Fragment} from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { ListasEntidas,CrearEditarEntidas } from './servicio/Servicio'
 
-
-export default function ModalGenerico({handleClose,url,editarEntindad,numero,columna,modal}) {
+export default function ComponenteCampo({columnaCampo,url,handleChange}) {
     const stateInicial = {
         mascota:{
                     tipo: "",
@@ -27,84 +26,24 @@ export default function ModalGenerico({handleClose,url,editarEntindad,numero,col
                     historia: ""
                   }
     }
-    
-    const [BtnEditar, setBtnEditar] = useState(false)
-    const [ApiMascota, setApiMascota] = useState([])
-    const [ApiDueno, setApiDueno] = useState([])
-    const [ApiVeterinario, setApiVeterinario] = useState([])
-    const [newMascota, setnewMascota] = useState(stateInicial[url])
-
-    const Guardar= "Guardar"
-    const Editar ="Editar"
-    useEffect(() => {
-        ListasEntidas('mascota').then((e)=>setApiMascota(e))
-        ListasEntidas('veterinarias').then((e)=>setApiVeterinario(e))
-        ListasEntidas('duenos').then((e)=>setApiDueno(e))
-    }, [url])
-
     var tipoMascota =[
         {valor: "Perro", etiqueta: "Perro"},
         {valor: "Gato", etiqueta: "Gato"},
         {valor: "Pajaro", etiqueta: "Pajaro"},
         {valor: "Otro", etiqueta: "Otro"},
     ]
-
-    const botonEditar = () =>{
-        setBtnEditar(false)
-        handleClose()
-    }
-
-    const handleChange = (e) =>{
-        let {value, name}= e.target
-        console.log(e.target);
-        let mientras =null;
-        if(url === "consultas" )
-        {
-            if( name === "mascota"){
-                ApiMascota.forEach((mas,inde) => {
-                    if(value === mas.nombre) {
-                        mientras=value;
-                        value=inde;
-                    }
-                })
-            }
-            if(name === "veterinarias"){
-                ApiVeterinario.forEach((mas,inde) => {
-                    if(value === mas.nombre){
-                        mientras=value;
-                        value=inde
-                    } 
-                })
-            }
-        }
-        setnewMascota({...newMascota,[name]:value})
-    }
-
-    const handleSumit = () =>{
-        if (BtnEditar === false) {
-            // console.log(newMascota);
-            CrearEditarEntidas(url,"POST",newMascota).then(() =>botonEditar() ) 
-        } else {
-            // console.log(newMascota);
-            CrearEditarEntidas(url,"PUT",newMascota,numero).then(() =>botonEditar() ) 
-        }  
-    }
-
+    const [ApiMascota, setApiMascota] = useState([])
+    const [ApiDueno, setApiDueno] = useState([])
+    const [ApiVeterinario, setApiVeterinario] = useState([])
+    const [newMascota, setnewMascota] = useState(stateInicial[url])
+    
     useEffect(() => {
-        if(editarEntindad != null){
-        setBtnEditar(true)
-        if (url === "consultas") {
-                let mascotaConsulta =editarEntindad.mascota.id
-                let veteriConsulta =editarEntindad.veterinarias.id
-                editarEntindad.mascota= mascotaConsulta
-                editarEntindad.veterinarias= veteriConsulta
-        }
-            setnewMascota(editarEntindad)
-        }
-    }, [editarEntindad])
+        ListasEntidas('mascota').then((e)=>setApiMascota(e))
+        ListasEntidas('veterinarias').then((e)=>setApiVeterinario(e))
+        ListasEntidas('duenos').then((e)=>setApiDueno(e))
+    }, [url])
 
-    const ComponenteCampo = ({columnaCampo=""}) =>{
-        switch (columnaCampo) { 
+            switch (columnaCampo) { 
             case "tipo":
             case "dueno":
             case "mascota":
@@ -178,41 +117,4 @@ export default function ModalGenerico({handleClose,url,editarEntindad,numero,col
             default:
                 break;
         }
-    }
-
-    console.log(newMascota);
-    return (
-        <>
-        <Modal show={modal} onHide={handleClose} animation={false}>
-            <Modal.Header closeButton>
-                 <Modal.Title>{`Nueva ${url}`}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                {
-                    url === "consultas"
-                    ?["mascota","veterinarias","historia","diagnosticos"].map((col,index) => {
-                          return  <ComponenteCampo 
-                            key={`${index}-- ${url}`}
-                            columnaCampo={col}/>
-                                        })
-                    :columna.map((col,index) => {
-                        return  <ComponenteCampo 
-                          key={`${index}-- ${url}`}
-                          columnaCampo={col}/>
-                                      })
-                        
-                }
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Cerrar
-                </Button>
-                <Button variant="primary" onClick={handleSumit}>
-                    {BtnEditar === true ? Editar : Guardar}
-                </Button>
-            </Modal.Footer>
-        </Modal>
-      </>
-    )
 }
-
