@@ -8,29 +8,27 @@ module.exports = function veterinariasHandler(veterinarias)
                 }
                 return callback (404,{mensaje:`veterinaria nuero ${data.indice} no se encontrado`})
             }
-            if(data.query && (
-                (typeof data.query.nombre !== "undefined")
-                || (data.query.apellido !== "undefined")
-                || (data.query.documento !== "undefined")
-                
-            )){
-                const keyQuery = Object.keys(data.query)
-                let veterinariasQuery = [...veterinarias]
-                keyQuery.forEach( llave => {
-                    //exprecion regular si es ig = no importa mayuscula y minuscia
-                    const expreRegular = new RegExp(data.query[llave],"ig")
-                    //evaluar todas las entidades
-                    veterinariasQuery = veterinariasQuery.filter(_veterinarias => {
-                        //verificar cada entinda con cada key si posee la exprecon regular 
-                        const resultado = _veterinarias[llave].match(expreRegular)
-                        // console.log(resultado);
-                        // _veterinarias[llave] === data.query[llave] 
-                        //si retorna true es el objeto y como estamos en filter lo devulves completo
-                        return resultado
-                    })
+            //busqueda de modal
+            if (
+                data.query &&
+                (data.query.nombre || data.query.apellido || data.query.documento)
+              ) {
+                const llavesQuery = Object.keys(data.query);
+                let respuestaveterinariass = [...veterinarias];
+                respuestaveterinariass = respuestaveterinariass.filter((_veterinarias) => {
+                  let resultado = false;
+                  for (const llave of llavesQuery) {
+                    const expresionRegular = new RegExp(data.query[llave], "ig");
+                    resultado = _veterinarias[llave].match(expresionRegular);
+                    if (resultado) {
+                      break;
+                    }
+                  }
+                  return resultado;
                 });
-                return callback(200,veterinariasQuery);
+                return callback(200, respuestaveterinariass);
             }
+            
             callback(200,veterinarias);
         },
         post: (data,callback) => {

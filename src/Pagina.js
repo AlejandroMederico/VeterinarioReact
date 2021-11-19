@@ -5,7 +5,8 @@ import ModalGenerico from './componente/ModalGenerico'
 import {ListasEntidas,EliminarEntidas} from './componente/servicio/Servicio'
 
 
-export default function Pagina({titulo,url}) {
+export default function Pagina({titulo,url,busquedaGenerica}) {
+    console.log(busquedaGenerica);
     const [modal, setModal] = useState(false)
     const [Entidad, setEntidad] = useState([])
     const [editar, seteditar] = useState()
@@ -18,11 +19,13 @@ export default function Pagina({titulo,url}) {
         };
 
     useEffect(() => {
-        BuscarDato(url);
-    }, [url])
-    const BuscarDato = async (url) =>{
+        BuscarDato(url,busquedaGenerica);
+    }, [url,busquedaGenerica])
+
+
+    const BuscarDato = async (url,buscar) =>{
         try {  
-                const datosApi = await ListasEntidas(url)
+                const datosApi = await ListasEntidas(url,buscar)
                 setEntidad(datosApi);
                 
                 if (Array.isArray(datosApi) && datosApi.length >0) setcolumna(Object.keys(datosApi[0]))

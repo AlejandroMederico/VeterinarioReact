@@ -1,9 +1,20 @@
 const urlBasica ="http://localhost:5000";
 
 
-export  async function ListasEntidas(url) {
+export  async function ListasEntidas(url,search) {
     try {
-        const respuesta = await fetch(`${urlBasica}/${url}`);
+        console.log(search);
+        let urlListar =`${urlBasica}/${url}`
+        if (url==="mascota" && search.length >0) {
+            urlListar +=`?nombre=${search}&tipo=${search}&dueno=${search}`
+        }
+        if ((url==="veterinarias"  || url==="duenos") && search.length >0) {
+            urlListar +=`?nombre=${search}&apellido=${search}&documento=${search}`
+        }
+        // if (url==="consultas"  && search.length >0) {
+        //     urlListar +=`?mascota=${search}&veterinarias=${search}&historia=${search}&diagnosticos=${search}`
+        // }
+        const respuesta = await fetch(urlListar);
         const datos = await respuesta.json();
         return datos;
     } catch (error) {

@@ -180,7 +180,7 @@ export default function ModalGenerico({handleClose,url,editarEntindad,numero,col
         }
     }
 
-    console.log(newMascota);
+    // console.log(newMascota);
     return (
         <>
         <Modal show={modal} onHide={handleClose} animation={false}>
