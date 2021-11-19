@@ -10,31 +10,34 @@ module.exports = function consultasHandler({consultas,duenos,veterinarias,mascot
             }
             let _consultas = [...consultas]
             if(data.query && (
-                (typeof data.query.mascota !== "undefined")
-                || (data.query.veterinarias !== "undefined")
-                || (data.query.historia !== "undefined")
-                || (data.query.diagnosticos !== "undefined")
+                ( data.query.mascota )
+                || (data.query.veterinarias )
+                || (data.query.historia )
+                || (data.query.diagnosticos )
                 
             )){
                 const keyQuery = Object.keys(data.query)
-                keyQuery.forEach( llave => {
-                    //exprecion regular si es ig = no importa mayuscula y minuscia
-                    const expreRegular = new RegExp(data.query[llave],"ig")
-                    //evaluar todas las entidades
-                    _consultas = _consultas.filter(consultas_ => {
-                        let resultado = false;
-                        if(llave === "historia" || llave === "diagnosticos" ){
-                            //verificar cada entinda con cada key si posee la exprecon regular 
-                         resultado = consultas_[llave].match(expreRegular)
+                _consultas = _consultas.filter(consultas_ => {
+                    let resultado = false;
+                    for (const llave of keyQuery) {
+                        const expreRegular = new RegExp(data.query[llave],"ig")
+                            if(llave === "fechaCreacion" || llave === "fechaEdicion" ){
+                            continue
+                            }
+                            if(llave === "historia" || llave === "diagnosticos" ){
+                            resultado = consultas_[llave].match(expreRegular)
+                            if (resultado) {
+                                break;
+                              }
+                            }
+                            if(llave === "mascota" || llave === "veterinarias" ){
+                            resultado = consultas_[llave] == data.query[llave]
+                            if (resultado) {
+                                break;
+                              }
+                            }
                         }
-                        if(llave === "mascota" || llave === "veterinarias" ){
-                         resultado = consultas_[llave] == data.query[llave]
-                        }
-                        // console.log(resultado);
-                        // _veterinarias[llave] === data.query[llave] 
-                        //si retorna true es el objeto y como estamos en filter lo devulves completo
                         return resultado
-                    })
                 });
             }
             const consultasRelacionada = _consultas.map((consulta) =>(
