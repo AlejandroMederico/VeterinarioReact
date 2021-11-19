@@ -25,7 +25,7 @@ module.exports = (req, res) => {
     res.setHeader("Access-Control-Request-Headers", "*");
 
     //3.1.2 Respuesta el browser
-    if (metodo == "options") {
+    if (metodo === "options") {
         res.writeHead(200);
         res.end();
         return
@@ -69,7 +69,7 @@ module.exports = (req, res) => {
             headers,
             payload: buffer
         }
-        console.log(data);
+        // console.log(data);
 
         //3.6 Elegir el manejador depemdedo de la ruta //handler
         let handler;

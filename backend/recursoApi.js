@@ -22,5 +22,12 @@ module.exports ={
         historia: '',
         diagnosticos: 'Moquillo',
         },
+        {mascota: 2, 
+            veterinarias: 2, 
+            fechaCreacion: new Date(),
+            fechaEdicion: new Date(),
+            historia: 'historia 2',
+            diagnosticos: 'Moquillo',
+            }
     ],
 }
