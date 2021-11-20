@@ -1,7 +1,9 @@
+
 module.exports = (req, res) => {
     const url = require('url');
     const { StringDecoder } = require('string_decoder');
     const enrutador = require("./enrutador");
+    const {numeroAlatorio}= require("./util")
 
     // 1. obetener la URL des req
     const urlActual = req.url;
@@ -61,13 +63,17 @@ module.exports = (req, res) => {
         };
 
         //3.5 Ordenar la data del request
-        const data={
+        let data={
             indice,
             ruta: rutaPrincial,
             query,
             metodo,
             headers,
             payload: buffer
+        }
+
+        if(metodo === "post" && data.payload){
+            data.payload.id = numeroAlatorio()
         }
         // console.log(data);
 

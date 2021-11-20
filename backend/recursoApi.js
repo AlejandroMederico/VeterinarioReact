@@ -20,7 +20,7 @@ module.exports ={
         fechaCreacion: new Date(),
         fechaEdicion: new Date(),
         historia: 'estornido',
-        diagnosticos: 'Moquillo1',
+        diagnosticos: 'Moquillo',
         },
         {mascota: 2, 
             veterinarias: 2, 
