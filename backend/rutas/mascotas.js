@@ -1,13 +1,20 @@
+const {crear,obtenerUno,listar} = require("../data-handler")
 module.exports = function mascotaHandler(mascota) 
  {
     return  {
-        get: (data,callback) => {
-            // console.log("mascota GET",data);
+        
+        get: async (data,callback) => {
             if (data.indice) {
-                if (mascota[data.indice]) {
-                    return callback(200,mascota[data.indice]);
-                }
-                return callback (404,{mensaje:`Mascota nuero ${data.indice} no se encontrado`})
+              return obtenerUno({
+                directorioEntidad: "mascota",
+                nombreArchivo: data.indice
+                },
+                (error,_mascota) =>{
+                    if (error) {
+                        return callback (500,{mensaje: error.message});
+                    }
+                    return callback(200,_mascota);
+                });        
             }
             if (
                 data.query &&
@@ -52,12 +59,38 @@ module.exports = function mascotaHandler(mascota)
                 });
                 return callback(200, respuestaMascotas);
             }
-            callback(200,mascota);
+            await listar({
+                directorioEntidad: "mascota"
+                },
+                (error,_mascota) =>{
+                    if (error) {
+                        return callback (500,{mensaje: error.message});
+                    }
+                    return callback(200,_mascota);
+                });  
+            // callback(200,mascota);
         },
-        post: (data,callback) => {
-            mascota.push(data.payload);
+         post: (data,callback) => {
+            if(data && data.payload && data.payload.id){
+                crear({
+                    directorioEntidad: "mascota",
+                    nombreArchivo: data.payload.id,
+                    datosGuardar: data.payload
+                },(error) =>{
+                    if(error){
+                        console.log(error,"error");
+                       return callback(500,{mensaje:error.message});
+                    };
+                    return callback(201,data.payload);
+                });
+            }else{
+                callback(400, {
+                    mensaje:
+                      "hay un error porque no se envió el payload o no se creó el id",
+                  });
+            }
+            // mascota.push(data.payload);
             //creaos algo es 201
-            callback(201,data.payload);
         },
         put: (data,callback) => {
             if (data.indice) {

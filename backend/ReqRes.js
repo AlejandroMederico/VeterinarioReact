@@ -3,7 +3,7 @@ module.exports = (req, res) => {
     const url = require('url');
     const { StringDecoder } = require('string_decoder');
     const enrutador = require("./enrutador");
-    const {numeroAlatorio}= require("./util")
+    const numeroAlatorio= require("./util")
 
     // 1. obetener la URL des req
     const urlActual = req.url;

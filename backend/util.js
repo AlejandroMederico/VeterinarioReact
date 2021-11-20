@@ -1,5 +1,3 @@
-const numeroAlatorio = () => Math.randon().toString(36).split('.')[1]
+const numeroAlatorio = () => Math.random().toString(36).split('.')[1];
 
-module.exports={
-    numeroAlatorio,
-}
+module.exports =numeroAlatorio;
