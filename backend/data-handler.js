@@ -38,11 +38,10 @@ const dataHandler = {
             }
         });
     },
-    listar: ({directorioEntidad},callback) =>{
-        fs.readdir(`${directorioBase}/${directorioEntidad}/`,
-        async (error,files) => {
-            if(!error && files){
-                files = files.filter(nombreCarpeta => nombreCarpeta.includes(".json"))
+    listar: async({directorioEntidad}) =>{
+        try {
+            let files = await fs.promises.readdir(`${directorioBase}/${directorioEntidad}/`);
+                files = files.filter(nombreCarpeta => nombreCarpeta.includes(".json"));
                 const arrayPromesaLeerArchivo = files.map(entidad =>{
                     return fs.promises.readFile(
                         `${directorioBase}/${directorioEntidad}/${entidad}`,
@@ -51,12 +50,10 @@ const dataHandler = {
                 });
                 let datosArchivos = await Promise.all(arrayPromesaLeerArchivo);
                 datosArchivos =datosArchivos.map(JSON.parse);
-                console.log(datosArchivos);
-                callback(false,datosArchivos);
-            }else{
-                callback(new Error (`No se pudo leer los  archivo en la carpeta ${directorioEntidad}`)) ;
-            }
-        });
+                return (false,datosArchivos);  
+        } catch (error) {
+            return (new Error (`No se pudo leer el archivo o ya existe de la carpeta ${directorioEntidad}`))
+        }
     },
 };
 module.exports =dataHandler;

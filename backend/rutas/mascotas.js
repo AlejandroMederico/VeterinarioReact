@@ -59,16 +59,12 @@ module.exports = function mascotaHandler(mascota)
                 });
                 return callback(200, respuestaMascotas);
             }
-            await listar({
-                directorioEntidad: "mascota"
-                },
-                (error,_mascota) =>{
-                    if (error) {
-                        return callback (500,{mensaje: error.message});
-                    }
-                    return callback(200,_mascota);
-                });  
-            // callback(200,mascota);
+            try {
+                let arrayMascota = await listar({ directorioEntidad: "mascota"});
+                return callback(200,arrayMascota);
+            } catch (error) {
+                return callback (500,{mensaje: error.message});
+            }
         },
          post: (data,callback) => {
             if(data && data.payload && data.payload.id){
