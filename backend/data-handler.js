@@ -1,9 +1,26 @@
-const { assert } = require("console");
 const fs = require("fs");
 const path = require("path");
+const util = require("util")
 
 // eslint-disable-next-line no-undef
 const directorioBase = path.join(__dirname,"data");
+
+const readFilePromesa = util.promisify(fs.readFile)
+
+
+// const readFilePromesa = ({rutaArchivo}) =>{
+//     return new Promise ((resolve,reject) =>{
+//         fs.readFile(rutaArchivo,"utf-8", (error,data) =>{
+//             if(error ){
+//                 return reject(new Error ("No se pudo leer el archivo o ya existe ")) ;
+//             }
+//             return resolve(JSON.parse(data));
+//         });
+//     })
+// }
+
+/// con libreria para convertir en promesa
+
 const dataHandler = {
     crear: ({directorioEntidad,nombreArchivo,datosGuardar},callback)=>{
         fs.open(`${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`,
@@ -27,16 +44,14 @@ const dataHandler = {
             };
         });
     },
-    obtenerUno: ({directorioEntidad,nombreArchivo},callback) =>{
-        fs.readFile(`${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`,
-        "utf-8",
-        (error,data) =>{
-            if(!error && data){
-                callback(false,JSON.parse(data));
-            }else{
-                callback(new Error ("No se pudo leer el archivo o ya existe ")) ;
-            }
-        });
+    obtenerUno: async({directorioEntidad,nombreArchivo}) =>{
+       try {
+           const entidadUno = await readFilePromesa(
+            `${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`,"utf-8")
+            return JSON.parse(entidadUno);    
+       } catch (error) {
+        new Error (`No se pudo leer el archivo ${nombreArchivo} o ya existe` )
+       }
     },
     listar: async({directorioEntidad}) =>{
         try {

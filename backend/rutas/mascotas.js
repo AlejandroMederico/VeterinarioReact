@@ -5,16 +5,16 @@ module.exports = function mascotaHandler(mascota)
         
         get: async (data,callback) => {
             if (data.indice) {
-              return obtenerUno({
-                directorioEntidad: "mascota",
-                nombreArchivo: data.indice
-                },
-                (error,_mascota) =>{
-                    if (error) {
-                        return callback (500,{mensaje: error.message});
-                    }
+                try {
+                    const _mascota = await obtenerUno({
+                        directorioEntidad: "mascota",
+                        nombreArchivo: data.indice
+                    });
+                    console.log(_mascota);
                     return callback(200,_mascota);
-                });        
+                } catch (error) {
+                    return callback (500,{mensaje: error.message}); 
+                }    
             }
             if (
                 data.query &&
