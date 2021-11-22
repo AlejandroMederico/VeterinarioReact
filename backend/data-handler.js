@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const util = require("util")
+const util = require("util");
 
 // eslint-disable-next-line no-undef
 const directorioBase = path.join(__dirname,"data");
@@ -22,27 +22,19 @@ const readFilePromesa = util.promisify(fs.readFile)
 /// con libreria para convertir en promesa
 
 const dataHandler = {
-    crear: ({directorioEntidad,nombreArchivo,datosGuardar},callback)=>{
-        fs.open(`${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`,
-        "wx",
-        (error,filedescripcion) =>{
-            if (!error && filedescripcion) {
-                const datoString= JSON.stringify(datosGuardar);
-                fs.write(filedescripcion,datoString, error2 =>{
-                    if(error2) {
-                    return callback(new Error ("No pudo escribir en el archivo"));
-                    };
-                });
-                fs.close(filedescripcion, error3 =>{
-                    if(error3) {
-                    return callback(new Error ("No pudo cerrar el archivo"));
-                    };
-                    callback(false);
-                });
-            } else {
-                callback(new Error ("No se pudo crear el archivo o ya existe ")) ;
-            };
-        });
+    crear: async({directorioEntidad,nombreArchivo,datosGuardar})=>{
+        try {
+            const filedescripcion = await fs.promises.open(
+                `${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`,
+                "wx");
+            const dataString = JSON.stringify(datosGuardar);
+            await fs.promises.writeFile(filedescripcion,dataString);
+            // No se cierra con fs.close porque writeFile ya lo cierra pero da error y se usa el de abajo
+            await filedescripcion?.close();
+            return datosGuardar;
+        } catch (error) {
+           return error; 
+        }
     },
     obtenerUno: async({directorioEntidad,nombreArchivo}) =>{
        try {
@@ -50,7 +42,7 @@ const dataHandler = {
             `${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`,"utf-8")
             return JSON.parse(entidadUno);    
        } catch (error) {
-        new Error (`No se pudo leer el archivo ${nombreArchivo} o ya existe` )
+        return new Error (`No se pudo leer el archivo ${nombreArchivo} o ya existe` )
        }
     },
     listar: async({directorioEntidad}) =>{
@@ -68,6 +60,43 @@ const dataHandler = {
                 return (false,datosArchivos);  
         } catch (error) {
             return (new Error (`No se pudo leer el archivo o ya existe de la carpeta ${directorioEntidad}`))
+        }
+    },
+    actualizar: async({directorioEntidad,nombreArchivo,datosGuardar})=>{
+        try {
+            const direccionExita = fs.existsSync(
+                `${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`)
+            if (!direccionExita) {
+               return new Error (`No se pudo leer el archivo ${nombreArchivo} o ya existe` )
+            }
+            const datosAnteriores = await dataHandler.obtenerUno({
+                directorioEntidad,nombreArchivo
+            })
+            const datosActualizados = {...datosAnteriores,...datosGuardar}
+            await fs.promises.unlink(`${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`);
+            const filedescripcion = await fs.promises.open(
+                `${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`,
+                "wx");
+            const dataString = JSON.stringify(datosActualizados);
+            await fs.promises.writeFile(filedescripcion,dataString);
+            // No se cierra con fs.close porque writeFile ya lo cierra pero da error y se usa el de abajo
+            await filedescripcion?.close();
+            return datosGuardar;
+        } catch (error) {
+           return error; 
+        }
+    },
+    eliminar: async({directorioEntidad,nombreArchivo})=>{
+        try {
+            const direccionExita = fs.existsSync(
+                `${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`)
+            if (!direccionExita) {
+               return new Error (`No se pudo leer el archivo ${nombreArchivo} o no existe` )
+            }
+            await fs.promises.unlink(`${directorioBase}/${directorioEntidad}/${nombreArchivo}.json`);
+            return nombreArchivo
+        } catch (error) {
+           return error; 
         }
     },
 };

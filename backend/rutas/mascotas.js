@@ -1,4 +1,4 @@
-const {crear,obtenerUno,listar} = require("../data-handler")
+const {crear,obtenerUno,listar, actualizar, eliminar} = require("../data-handler")
 module.exports = function mascotaHandler(mascota) 
  {
     return  {
@@ -10,7 +10,6 @@ module.exports = function mascotaHandler(mascota)
                         directorioEntidad: "mascota",
                         nombreArchivo: data.indice
                     });
-                    console.log(_mascota);
                     return callback(200,_mascota);
                 } catch (error) {
                     return callback (500,{mensaje: error.message}); 
@@ -66,47 +65,47 @@ module.exports = function mascotaHandler(mascota)
                 return callback (500,{mensaje: error.message});
             }
         },
-         post: (data,callback) => {
+         post: async (data,callback) => {
             if(data && data.payload && data.payload.id){
-                crear({
+                const resultado = await crear({
                     directorioEntidad: "mascota",
                     nombreArchivo: data.payload.id,
-                    datosGuardar: data.payload
-                },(error) =>{
-                    if(error){
-                        console.log(error,"error");
-                       return callback(500,{mensaje:error.message});
-                    };
-                    return callback(201,data.payload);
-                });
+                    datosGuardar: data.payload});
+                    return callback(201,resultado);
             }else{
-                callback(400, {
+                return callback(400, {
                     mensaje:
                       "hay un error porque no se envió el payload o no se creó el id",
                   });
             }
-            // mascota.push(data.payload);
-            //creaos algo es 201
         },
-        put: (data,callback) => {
+        put: async (data,callback) => {
             if (data.indice) {
-                if (mascota[data.indice]) {
-                    mascota[data.indice]= data.payload;
-                    return callback(200,mascota[data.indice]);
-                }
-                return callback (404,{mensaje:`Mascota no encontrada con el indice ${data.indice}`})
+                    const datosActuales = {...data.payload,id:data.indice}
+                    const resultado = await actualizar(
+                        {directorioEntidad: "mascota",
+                        nombreArchivo: data.indice,
+                        datosGuardar: datosActuales}
+                    )
+                    if(resultado.id){
+                        return callback(200,resultado);
+                    }
+                    if(resultado.message){
+                        return callback (404,{mensaje:`Mascota no encontrada con el indice ${data.indice}`})
+                    }  
             }
             callback(404,{mensaje:`No se envio el indice`});
         },
-        delete: (data,callback) => {
-            if (data.indice) {
-                if (mascota[data.indice]) {
-                    mascota= mascota.filter((_mascota,index) => index !== data.indice);
-                    return callback(204,{mensaje:`La Mascota numero ${data.indice} fue Eliminada`});
+        delete: async (data,callback) => {
+                if (data.indice) {
+                    await eliminar(
+                        {directorioEntidad: "mascota", nombreArchivo: data.indice});
+                    return callback(204);
                 }
-                return callback (404,{mensaje:`Mascota no encontrada con el indice ${data.indice}`})
-            }
-            callback(404,{mensaje:`No se envio el indice`});
+                else{
+                    return callback(400,
+                        {mensaje:"hay un error porque no se envió el payload o no se creó el id"});
+                }
         }
     };
     
