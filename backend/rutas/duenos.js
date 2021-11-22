@@ -1,20 +1,28 @@
-module.exports = function duenosHandler(duenos) 
+const {crear,obtenerUno,listar, actualizar, eliminar} = require("../data-handler")
+module.exports = function duenosHandler() 
  {
     return  {
-        get: (data,callback) => {
+        
+        get: async (data,callback) => {
             if (data.indice) {
-                if (duenos[data.indice]) {
-                    return callback(200,duenos[data.indice]);
-                }
-                return callback (404,{mensaje:`dueno nuero ${data.indice} no se encontrado`})
+                try {
+                    const _duenos = await obtenerUno({
+                        directorioEntidad: "duenos",
+                        nombreArchivo: data.indice
+                    });
+                    return callback(200,_duenos);
+                } catch (error) {
+                    return callback (500,{mensaje: error.message}); 
+                }    
             }
             if (
                 data.query &&
                 (data.query.nombre || data.query.apellido || data.query.documento)
               ) {
+                const arrayduenos = await listar({ directorioEntidad: "duenos"});
                 const llavesQuery = Object.keys(data.query);
-                let respuestaduenos = [...duenos];
-                respuestaduenos = respuestaduenos.filter((_duenos) => {
+                let respuestaduenoss = [...arrayduenos];
+                respuestaduenoss = respuestaduenoss.filter((_duenos) => {
                   let resultado = false;
                   for (const llave of llavesQuery) {
                     const expresionRegular = new RegExp(data.query[llave], "ig");
@@ -25,34 +33,56 @@ module.exports = function duenosHandler(duenos)
                   }
                   return resultado;
                 });
-                return callback(200, respuestaduenos);
+                return callback(200, respuestaduenoss);
             }
-            callback(200,duenos);
+            try {
+                let arrayduenos = await listar({ directorioEntidad: "duenos"});
+                return callback(200,arrayduenos);
+            } catch (error) {
+                return callback (500,{mensaje: error.message});
+            }
         },
-        post: (data,callback) => {
-            duenos.push(data.payload);
-            //creaos algo es 201
-            callback(201,data.payload);
+         post: async (data,callback) => {
+            if(data && data.payload && data.payload.id){
+                const resultado = await crear({
+                    directorioEntidad: "duenos",
+                    nombreArchivo: data.payload.id,
+                    datosGuardar: data.payload});
+                    return callback(201,resultado);
+            }else{
+                return callback(400, {
+                    mensaje:
+                      "hay un error porque no se envió el payload o no se creó el id",
+                  });
+            }
         },
-        put: (data,callback) => {
+        put: async (data,callback) => {
             if (data.indice) {
-                if (duenos[data.indice]) {
-                    duenos[data.indice]= data.payload;
-                    return callback(200,duenos[data.indice]);
-                }
-                return callback (404,{mensaje:`dueno no encontrada con el indice ${data.indice}`})
+                    const datosActuales = {...data.payload,id:data.indice}
+                    const resultado = await actualizar(
+                        {directorioEntidad: "duenos",
+                        nombreArchivo: data.indice,
+                        datosGuardar: datosActuales}
+                    )
+                    if(resultado.id){
+                        return callback(200,resultado);
+                    }
+                    if(resultado.message){
+                        return callback (404,{mensaje:`duenos no encontrada con el indice ${data.indice}`})
+                    }  
             }
             callback(404,{mensaje:`No se envio el indice`});
         },
-        delete: (data,callback) => {
-            if (data.indice) {
-                if (duenos[data.indice]) {
-                    duenos= duenos.filter((_duenos,index) => index != data.indice);
-                    return callback(204,{mensaje:`La duenos numero ${data.indice} fue Eliminada`});
+        delete: async (data,callback) => {
+                if (data.indice) {
+                    await eliminar(
+                        {directorioEntidad: "duenos", nombreArchivo: data.indice});
+                    return callback(204);
                 }
-                return callback (404,{mensaje:`dueno no encontrada con el indice ${data.indice}`})
-            }
-            callback(404,{mensaje:`No se envio el indice`});
+                else{
+                    return callback(400,
+                        {mensaje:"hay un error porque no se envió el payload o no se creó el id"});
+                }
         }
     };
     

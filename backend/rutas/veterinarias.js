@@ -1,20 +1,27 @@
-module.exports = function veterinariasHandler(veterinarias) 
+const {crear,obtenerUno,listar, actualizar, eliminar} = require("../data-handler")
+module.exports = function veterinariasHandler() 
  {
     return  {
-        get: (data,callback) => {
+        
+        get: async (data,callback) => {
             if (data.indice) {
-                if (veterinarias[data.indice]) {
-                    return callback(200,veterinarias[data.indice]);
-                }
-                return callback (404,{mensaje:`veterinaria nuero ${data.indice} no se encontrado`})
+                try {
+                    const _veterinarias = await obtenerUno({
+                        directorioEntidad: "veterinarias",
+                        nombreArchivo: data.indice
+                    });
+                    return callback(200,_veterinarias);
+                } catch (error) {
+                    return callback (500,{mensaje: error.message}); 
+                }    
             }
-            //busqueda de modal
             if (
                 data.query &&
                 (data.query.nombre || data.query.apellido || data.query.documento)
               ) {
+                const arrayveterinarias = await listar({ directorioEntidad: "veterinarias"});
                 const llavesQuery = Object.keys(data.query);
-                let respuestaveterinariass = [...veterinarias];
+                let respuestaveterinariass = [...arrayveterinarias];
                 respuestaveterinariass = respuestaveterinariass.filter((_veterinarias) => {
                   let resultado = false;
                   for (const llave of llavesQuery) {
@@ -28,33 +35,54 @@ module.exports = function veterinariasHandler(veterinarias)
                 });
                 return callback(200, respuestaveterinariass);
             }
-            
-            callback(200,veterinarias);
+            try {
+                let arrayveterinarias = await listar({ directorioEntidad: "veterinarias"});
+                return callback(200,arrayveterinarias);
+            } catch (error) {
+                return callback (500,{mensaje: error.message});
+            }
         },
-        post: (data,callback) => {
-            veterinarias.push(data.payload);
-            //creaos algo es 201
-            callback(201,data.payload);
+         post: async (data,callback) => {
+            if(data && data.payload && data.payload.id){
+                const resultado = await crear({
+                    directorioEntidad: "veterinarias",
+                    nombreArchivo: data.payload.id,
+                    datosGuardar: data.payload});
+                    return callback(201,resultado);
+            }else{
+                return callback(400, {
+                    mensaje:
+                      "hay un error porque no se envió el payload o no se creó el id",
+                  });
+            }
         },
-        put: (data,callback) => {
+        put: async (data,callback) => {
             if (data.indice) {
-                if (veterinarias[data.indice]) {
-                    veterinarias[data.indice]= data.payload;
-                    return callback(200,veterinarias[data.indice]);
-                }
-                return callback (404,{mensaje:`veterinaria no encontrada con el indice ${data.indice}`})
+                    const datosActuales = {...data.payload,id:data.indice}
+                    const resultado = await actualizar(
+                        {directorioEntidad: "veterinarias",
+                        nombreArchivo: data.indice,
+                        datosGuardar: datosActuales}
+                    )
+                    if(resultado.id){
+                        return callback(200,resultado);
+                    }
+                    if(resultado.message){
+                        return callback (404,{mensaje:`veterinarias no encontrada con el indice ${data.indice}`})
+                    }  
             }
             callback(404,{mensaje:`No se envio el indice`});
         },
-        delete: (data,callback) => {
-            if (data.indice) {
-                if (veterinarias[data.indice]) {
-                    veterinarias= veterinarias.filter((_veterinarias,index) => index != data.indice);
-                    return callback(204,{mensaje:`La veterinarias numero ${data.indice} fue Eliminada`});
+        delete: async (data,callback) => {
+                if (data.indice) {
+                    await eliminar(
+                        {directorioEntidad: "veterinarias", nombreArchivo: data.indice});
+                    return callback(204);
                 }
-                return callback (404,{mensaje:`veterinaria no encontrada con el indice ${data.indice}`})
-            }
-            callback(404,{mensaje:`No se envio el indice`});
+                else{
+                    return callback(400,
+                        {mensaje:"hay un error porque no se envió el payload o no se creó el id"});
+                }
         }
     };
     
