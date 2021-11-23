@@ -22,7 +22,7 @@ export default function FilaTabla({Entidad,editarEntidad,eliminarEntidad,columna
                 :<Fragment>
                             { Entidad.map((_Entidad, index)=>
                                 <tr key={`${index}-${_Entidad}`}>
-                                    <th scope="row">{index}</th>
+                                    <th scope="row">{_Entidad.id}</th>
                                     {columna.map((col,_index) => 
                                     <td key={`${_index}-${col}`}>
                                         {evaluarCampo({_Entidad,col})
@@ -31,10 +31,10 @@ export default function FilaTabla({Entidad,editarEntidad,eliminarEntidad,columna
                                     )}
                                     <td>
                                         <div className="btn-group" role="group" aria-label="Basic example">
-                                        <Button variant="primary" onClick={() => editarEntidad(index) }>
+                                        <Button variant="primary" onClick={() => editarEntidad(_Entidad.id) }>
                                              <FontAwesomeIcon icon={faEdit}/>
                                         </Button>
-                                        <Button variant="danger" onClick={() => eliminarEntidad(index) }>
+                                        <Button variant="danger" onClick={() => eliminarEntidad(_Entidad.id) }>
                                              <FontAwesomeIcon icon={faTrashAlt}/>
                                         </Button>
                                         

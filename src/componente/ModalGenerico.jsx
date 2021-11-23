@@ -1,189 +1,50 @@
 import {React, useState,useEffect} from 'react'
-import { Modal, Button, Form } from 'react-bootstrap'
-import { ListasEntidas,CrearEditarEntidas } from './servicio/Servicio'
+import { Modal, Button } from 'react-bootstrap'
+import ComponenteCampo from './ComponenteCampo';
+import { CrearEditarEntidas } from './servicio/Servicio'
 
 
 export default function ModalGenerico({handleClose,url,editarEntindad,numero,columna,modal}) {
-    const stateInicial = {
-        mascota:{
-                    tipo: "",
-                    nombre: "",
-                    dueno: ""
-                  },
-        duenos:{
-                    nombre: "",
-                    apellido: "",
-                    documento: ""
-                  },
-        veterinarias:{
-                    nombre: "",
-                    apellido: "",
-                    documento: ""
-                  },
-        consultas:{
-                    mascota: "",
-                    veterinarias: "",
-                    diagnosticos: "",
-                    historia: ""
-                  }
-    }
-    
+    if(columna.length === 0){
+        if(url === "duenos" || url === "veterinarias")columna=["nombre","apellido","documento"];  
+        if(url === "mascota") columna=["tipo","nombre","dueno"]
+    }  
     const [BtnEditar, setBtnEditar] = useState(false)
-    const [ApiMascota, setApiMascota] = useState([])
-    const [ApiDueno, setApiDueno] = useState([])
-    const [ApiVeterinario, setApiVeterinario] = useState([])
-    const [newMascota, setnewMascota] = useState(stateInicial[url])
-
+    const [stateFormulario, setstateFormulario] = useState({})
     const Guardar= "Guardar"
     const Editar ="Editar"
-    useEffect(() => {
-        ListasEntidas('mascota').then((e)=>setApiMascota(e))
-        ListasEntidas('veterinarias').then((e)=>setApiVeterinario(e))
-        ListasEntidas('duenos').then((e)=>setApiDueno(e))
-    }, [url])
-
-    var tipoMascota =[
-        {valor: "Perro", etiqueta: "Perro"},
-        {valor: "Gato", etiqueta: "Gato"},
-        {valor: "Pajaro", etiqueta: "Pajaro"},
-        {valor: "Otro", etiqueta: "Otro"},
-    ]
-
-    const botonEditar = () =>{
-        setBtnEditar(false)
-        handleClose()
-    }
-
-    const handleChange = (e) =>{
-        let {value, name}= e.target
-        console.log(e.target);
-        let mientras =null;
-        if(url === "consultas" )
-        {
-            if( name === "mascota"){
-                ApiMascota.forEach((mas,inde) => {
-                    if(value === mas.nombre) {
-                        mientras=value;
-                        value=inde;
-                    }
-                })
-            }
-            if(name === "veterinarias"){
-                ApiVeterinario.forEach((mas,inde) => {
-                    if(value === mas.nombre){
-                        mientras=value;
-                        value=inde
-                    } 
-                })
-            }
-        }
-        setnewMascota({...newMascota,[name]:value})
-    }
-
-    const handleSumit = () =>{
-        if (BtnEditar === false) {
-            // console.log(newMascota);
-            CrearEditarEntidas(url,"POST",newMascota).then(() =>botonEditar() ) 
-        } else {
-            // console.log(newMascota);
-            CrearEditarEntidas(url,"PUT",newMascota,numero).then(() =>botonEditar() ) 
-        }  
-    }
 
     useEffect(() => {
         if(editarEntindad != null){
+        setstateFormulario(editarEntindad)
         setBtnEditar(true)
-        if (url === "consultas") {
-                let mascotaConsulta =editarEntindad.mascota.id
-                let veteriConsulta =editarEntindad.veterinarias.id
-                editarEntindad.mascota= mascotaConsulta
-                editarEntindad.veterinarias= veteriConsulta
-        }
-            setnewMascota(editarEntindad)
         }
     }, [editarEntindad])
 
-    const ComponenteCampo = ({columnaCampo=""}) =>{
-        switch (columnaCampo) { 
-            case "tipo":
-            case "dueno":
-            case "mascota":
-            case "veterinarias":
-            let opcionApi ={
-                dueno:ApiDueno,
-                mascota:ApiMascota,
-                veterinarias:ApiVeterinario
-            }
-            if(columnaCampo ==="dueno" || columnaCampo ==="mascota" || columnaCampo ==="veterinarias"){
-                var arrayEntidadeSelec= opcionApi[columnaCampo]
-            }
-            const valorSelect = {
-                        tipo:newMascota.tipo,
-                        dueno:newMascota.dueno,
-                        mascota:newMascota.mascota,
-                        veterinarias:newMascota.veterinarias }
-                return(
-                        <Form.Group className="mb-3">
-                            <Form.Label>{`Selecione ${columnaCampo}`}</Form.Label>
-                            <Form.Select 
-                            name={columnaCampo}
-                            value={valorSelect[columnaCampo]}
-                            onChange={handleChange}
-                            aria-label={`Eliga ${columnaCampo}`}>
-                                    <option>{`Eliga ${columnaCampo}`}</option>
-                                    {columnaCampo === "tipo"
-                                    ?  tipoMascota.length >0
-                                        ? tipoMascota.map((opcion,index) =>
-                                            <option 
-                                            key={`${index}--${opcion.valor}--${url}`}
-                                            value={opcion.valor}
-                                            >{opcion.etiqueta}</option> )
-                                        : <option value="">No hay datos Cargados</option>
-                                   // LOS DEMAS SELECT
-                                    :   arrayEntidadeSelec.length >0
-                                            ? arrayEntidadeSelec.map((opcion,index) =>
-                                                <option 
-                                                key={`${index}--${opcion.nombre}--${url}`}
-                                                value={url === "consultas" ? index : opcion.nombre}
-                                                >{opcion.nombre}</option> )
-                                            : <option value="">No hay datos Cargados</option>
-                                    }
-                                    
-                            </Form.Select>
-                        </Form.Group>
-                        )
-                
-            case "nombre":
-            case "documento":
-            case "apellido":
-            case "historia":
-            case "diagnosticos":  
-            const valortext ={
-                         nombre:newMascota.nombre,
-                         documento:newMascota.documento,
-                         apellido:newMascota.apellido,
-                         historia:newMascota.historia,
-                         diagnosticos:newMascota.diagnosticos}
-                return (
-                    <Form.Group className="mb-3">
-                        <Form.Label>{columnaCampo}</Form.Label>
-                        <Form.Control 
-                            type="text"
-                            name={columnaCampo}
-                            value={valortext[columnaCampo]}
-                            onChange={handleChange}
-                            placeholder={`Ingrese ${columnaCampo}`}/>
-                    </Form.Group>
-                )
-            default:
-                break;
-        }
+    const botonEditar = () =>{
+        setBtnEditar(false)
+        cerrarModal()
     }
-
-    // console.log(newMascota);
+    const handleSumit = () =>{
+        if (BtnEditar === false) {
+            console.log("Crear");
+            CrearEditarEntidas(url,"POST",stateFormulario).then(() =>botonEditar() ) 
+        } else {
+            console.log("Editar");
+            CrearEditarEntidas(url,"PUT",stateFormulario,numero).then(() =>botonEditar() ) 
+        }  
+    }
+    const valueChange = (value,name)=>{
+        setstateFormulario({...stateFormulario,[name]:value})
+    }
+    const cerrarModal= () =>{
+        setstateFormulario({})
+        handleClose()
+    }
+    console.log(stateFormulario);
     return (
         <>
-        <Modal show={modal} onHide={handleClose} animation={false}>
+        <Modal show={modal} onHide={cerrarModal} animation={false}>
             <Modal.Header closeButton>
                  <Modal.Title>{`Nueva ${url}`}</Modal.Title>
             </Modal.Header>
@@ -191,20 +52,24 @@ export default function ModalGenerico({handleClose,url,editarEntindad,numero,col
                 {
                     url === "consultas"
                     ?["mascota","veterinarias","historia","diagnosticos"].map((col,index) => {
-                          return  <ComponenteCampo 
-                            key={`${index}-- ${url}`}
-                            columnaCampo={col}/>
-                                        })
+                          return  <ComponenteCampo
+                                    key={`${index}--${url}--${col}`}
+                                    columnaCampo={col}
+                                    url={url}
+                                    editarEntindad={editarEntindad}
+                                    valueChange={valueChange}/>})
                     :columna.map((col,index) => {
-                        return  <ComponenteCampo 
-                          key={`${index}-- ${url}`}
-                          columnaCampo={col}/>
-                                      })
-                        
+                        return  <ComponenteCampo
+                                key={`${index}--${url}--${col}`}
+                                url={url}
+                                columnaCampo={col}
+                                editarEntindad={editarEntindad}
+                                valueChange={valueChange}/>})
+                                
                 }
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button variant="secondary" onClick={cerrarModal}>
                     Cerrar
                 </Button>
                 <Button variant="primary" onClick={handleSumit}>

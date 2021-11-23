@@ -1,18 +1,28 @@
 const urlBasica ="http://localhost:5000";
 
 
-export  async function ListasEntidas(url,search) {
+export  async function ListasEntidas(url,search=null) {
     try {
         let urlListar =`${urlBasica}/${url}`
-        if (url==="mascota" && search.length >0) {
+        if (url==="mascota" && search !== null) {
             urlListar +=`?nombre=${search}&tipo=${search}&dueno=${search}`
         }
-        if ((url==="veterinarias"  || url==="duenos") && search.length >0) {
+        if ((url==="veterinarias"  || url==="duenos") && search !== null) {
             urlListar +=`?nombre=${search}&apellido=${search}&documento=${search}`
         }
-        if (url==="consultas"  && search.length >0) {
+        if (url==="consultas"  && search !== null) {
             urlListar +=`?mascota=${search}&veterinarias=${search}&historia=${search}&diagnosticos=${search}`
         }
+        const respuesta = await fetch(urlListar);
+        const datos = await respuesta.json();
+        return datos;
+    } catch (error) {
+        return error 
+    }
+}
+export  async function buscarUnaEntidad(url,id) {
+    try {
+        let urlListar =`${urlBasica}/${url}/${id}`
         const respuesta = await fetch(urlListar);
         const datos = await respuesta.json();
         return datos;

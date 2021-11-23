@@ -8,7 +8,7 @@ export default function EncabezadoTabla({columna}) {
                     {columna.length === 0 
                     ?<p>Ingrese dato para la tabla</p>
                     :<Fragment>
-                        <th scope="col">#</th>
+                        <th scope="col">Identificar</th>
                         {columna.map( (columna, index) => <th key={index} scope="col"> {columna}</th>)}
                         <th scope="col">Accion</th>
                      </Fragment>

@@ -2,15 +2,15 @@ import {React, useState,useEffect, Fragment} from 'react'
 import ActionMenu from './componente/ActionMenu'
 import Tabla from './componente/tabla/Tabla'
 import ModalGenerico from './componente/ModalGenerico'
-import {ListasEntidas,EliminarEntidas} from './componente/servicio/Servicio'
+import {ListasEntidas,EliminarEntidas, buscarUnaEntidad} from './componente/servicio/Servicio'
 
 
 export default function Pagina({titulo,url,busquedaGenerica}) {
-    console.log(busquedaGenerica);
     const [modal, setModal] = useState(false)
     const [Entidad, setEntidad] = useState([])
-    const [editar, seteditar] = useState()
+    const [editar, seteditar] = useState(null)
     const [columna, setcolumna] = useState([])
+    const [numeroEditar, setnumeroEditar] = useState(null)
     const ActivarModal = () =>setModal(true);
     const handleClose = async() => {
             setModal(false);
@@ -28,20 +28,36 @@ export default function Pagina({titulo,url,busquedaGenerica}) {
                 const datosApi = await ListasEntidas(url,buscar)
                 setEntidad(datosApi);
                 
-                if (Array.isArray(datosApi) && datosApi.length >0) setcolumna(Object.keys(datosApi[0]))
+                if (Array.isArray(datosApi) && datosApi.length >0) {
+                    setcolumna(Object.keys(datosApi[0]).filter(col => col !== "id"))
+                }
                 
                 } catch (error) {
                 throw error  
                 }
         }
 
-    const editarEntidad = (numero) => {   
-        seteditar(numero)
-        setModal(true)
+    const editarEntidad = async (numero) => {  
+        try {
+            const resultado = await buscarUnaEntidad(url,numero);
+            console.log(resultado); 
+            seteditar(resultado);
+            setnumeroEditar(numero);
+            setModal(true);
+            
+        } catch (error) {
+           throw error 
+        }
     };
 
-    const eliminarEntidad = (elim) => { 
-        EliminarEntidas(url,elim).then(()=>BuscarDato(url))
+    const eliminarEntidad = async(elim) => { 
+        try { console.log(url,elim);
+            await EliminarEntidas(url,elim)
+            BuscarDato(url)
+            
+        } catch (error) {
+            throw error
+        }
     };
     // console.log(Entidad);
 
@@ -57,9 +73,9 @@ export default function Pagina({titulo,url,busquedaGenerica}) {
                             modal={modal}
                             handleClose={handleClose} 
                             url={url} 
-                            editarEntindad ={Entidad[editar]}
+                            editarEntindad ={editar}
                             columna={columna}
-                            numero={editar}>
+                            numero={numeroEditar}>
                             </ModalGenerico>
             </Fragment>
            
